@@ -229,6 +229,136 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://hongxyz.github.io/2018/11/15/linux-install-anaconda-and-pytorch/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Hong peixian">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hong's blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2018/11/15/linux-install-anaconda-and-pytorch/" itemprop="url">在linux下安装anaconda 并使用anaconda安装pytorch</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-11-15T11:04:52+08:00">
+                2018-11-15
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="在linux上安装anaconda-使用anaconda安装pytorch"><a href="#在linux上安装anaconda-使用anaconda安装pytorch" class="headerlink" title="在linux上安装anaconda 使用anaconda安装pytorch"></a>在linux上安装anaconda 使用anaconda安装pytorch</h1><h2 id="安装anaconda"><a href="#安装anaconda" class="headerlink" title="安装anaconda"></a>安装anaconda</h2><p>由于我使用的是实验室的服务器，所以使用anaconda来隔离各自的环境，而且我也咩有root权限，搞不来pip2333<br>首先是在anaconda官网下载linux的版本 2.7和3.7都可以，反正后面如果一些包版本不支持3.7的话也会给你下一个3.6或者其他依赖的python版本<br><strong> bash Anaconda3-5.3.0-Linux-x86_64.sh </strong><br>安装anaconda，首先是过一遍license，接着安装，安装完之后会问你需不需要把anaconda的环境设置搞定，写在.bashrc里面，要选是，如果不小心跳过了，可以选择no后里面的提示，去设置，我记得是一句source什么什么的，忘了<br>后面的visual code选择不装<br>接着！！！最重要一点是要<strong> source ~/.bashrc </strong>，去激活anaconda的环境设置，不然就用不了，当然，关了终端重新开就也可以了<br>source之后，用conda list查看已安装的包，再输入python看看python是不是使用的anaconda的，而不是使用linux给的python<br>如果conda list时候告诉你没有conda命令，记得看一下是否source ~/.bashrc了</p>
+<h3 id="另外一些坑点"><a href="#另外一些坑点" class="headerlink" title="另外一些坑点"></a>另外一些坑点</h3><p>输入python后显示<br><strong> no module named _sysconfigdata_nd </strong><br>网上看了主要是python本身的bug，要解决需要root权限，我又没有…<br>最终解决方法是重新安装anaconda，并且发现<br>如果你下载的anaconda的python版本和linux里面的版本一样，那么在调用python的时候就可能出现这种情况，选择一个不同的版本下载，让他自己给你设置路径就好了</p>
+<h2 id="安装pytorch"><a href="#安装pytorch" class="headerlink" title="安装pytorch"></a>安装pytorch</h2><p>首先创建一个anaconda环境，每一个环境有不同的包这样相互隔离不会串来串去<br>conda create -n 环境名 python=版本号<br>比如<br>conda create -n pytorch python=3.6<br>激活<br>conda activate pytorch或者source activate pytorch<br>想要退出也很简单 conda deactivate 即可 或者source deactivate<br>在pytorch官网选择对应版本，我的是cuda9.2，python3.7，故而选择<br>conda install pytorch cuda92 -c pytorch<br>pip3 install torchvision</p>
+<p>等待安装，不过因为anaconda下载东西是在anaconda.org的服务器上下载，所以非常慢<br><strong> 可以选择更改代理为国内镜像网站 </strong>，比方说清华，中科大的等<br>conda config –add channels <a href="https://mirrors.ustc.edu.cn/anaconda/pkgs/free/" target="_blank" rel="noopener">https://mirrors.ustc.edu.cn/anaconda/pkgs/free/</a><br>conda config –set show_channel_urls yes<br>更改镜像记得去 .condarc 删除原有的镜像</p>
+<p>安装完后，python一下，试试import torch import torchvision怎么样，没报错就没有问题</p>
+<h3 id="坑点："><a href="#坑点：" class="headerlink" title="坑点："></a>坑点：</h3><p><strong> 可能报错：GLIBC_2.14’ not found或者是GLIBC更高版本的错误 </strong><br>解决方法：这主要是自己机器的glibc的版本太低了，如果想要修改机器的glibc搞不太好的话有可能机器整个dump掉了<br>而且如果是在实验室服务器上，也没有root权限，所以可以采用以下解决方法<br>从 <a href="http://ftp.gnu.org/gnu/glibc/" target="_blank" rel="noopener">http://ftp.gnu.org/gnu/glibc/</a> 下载自己的版本，我自己下载了2.14.1版本<br>解压，并在文件夹创建build文件夹<br>tar xvf glibc-2.14.1.tar.gz<br>cd glibc-2.14.1<br>mkdir build<br>cd build</p>
+<p>把安装信息搞到build里面<br>../configure –prefix=/你想要把包安装到的位置/glibc-2.14.1  –with-headers=/usr/include<br>网上有一些人是<br>../configure –prefix=/usr/local/glibc-2.14  –with-headers=/usr/include<br>../configure –prefix=/opt/glibc-2.14  –with-headers=/usr/include<br>但是你如果没有这些文件夹的权限的话，建议自己新建一个有权限的文件夹来放<br>比方说我自己是<br>../configure –prefix=/home/hong/glibc_temp/glibc-2.14  –with-headers=/usr/include<br>相当于指定把glibc安装在home/hong/glibc_temp/glibc-2.14里面</p>
+<p>安装<br>make<br>make install<br>如果没有usr/local opt的权限的话，使用上面的两条就会报permission denied的错误</p>
+<p>安装完毕之后，为了防止污染其他环境，输入命令即可，不要去改文件，反正，我没有root权限也改不了2333<br>命令<br>export LD_LIBRARY_PATH=/你安装的包的位置/lib:$LD_LIBRARY_PATH</p>
+<p>之后再import torch ，问题解决</p>
+<h3 id="另外的坑点"><a href="#另外的坑点" class="headerlink" title="另外的坑点"></a>另外的坑点</h3><p>如果你发现transform.Resize什么的报错说乜有这个attribute，就把transforms整个文件复制到你的目录再去import transforms就行了</p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://hongxyz.github.io/2018/10/17/two-stream/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -656,7 +786,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">3</span>
+                  <span class="site-state-item-count">4</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
